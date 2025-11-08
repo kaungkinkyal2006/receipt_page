@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #qrcode {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .download-btn {
+            background: #2196F3;
+            margin-top: 15px;
+        }
+        .download-btn:hover {
+            background: #0b7dda;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Receipt QR Code Generator</h1>
+        
+        <div class="info">
+            <strong>ℹ️ Free Static QR Code</strong><br>
+            Data is embedded directly in the QR code. No domain or server needed!
+        </div>
+
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" id="name" value="DAW PHYO PHYO WAI">
+        </div>
+
+        <div class="form-group">
+            <label>Account Number:</label>
+            <input type="text" id="account" value="40051132900271634">
+        </div>
+
+        <div class="form-group">
+            <label>ID Number:</label>
+            <input type="text" id="idNumber" value="5/KALAHTA(N)213907">
+        </div>
+
+        <div class="form-group">
+            <label>Amount (MMK):</label>
+            <input type="text" id="amount" value="59,160,750.85">
+        </div>
+
+        <div class="form-group">
+            <label>Amount in Words:</label>
+            <textarea id="amountWords">Kyat Fifty Nine Million One Hundred Sixty Thousand Seven Hundred Fifty and Eight Five Pyas Only</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Additional Notes (Optional):</label>
+            <textarea id="notes" placeholder="Transaction date, reference number, etc."></textarea>
+        </div>
+
+        <button onclick="generateQR()">Generate QR Code</button>
+
+        <div id="qrcode"></div>
+        <button id="downloadBtn" class="download-btn" style="display:none;" onclick="downloadQR()">Download QR Code</button>
+    </div>
+
+    <script>
+        let qrCodeInstance = null;
+
+        function generateQR() {
+            const name = document.getElementById('name').value;
+            const account = document.getElementById('account').value;
+            const idNumber = document.getElementById('idNumber').value;
+            const amount = document.getElementById('amount').value;
+            const amountWords = document.getElementById('amountWords').value;
+            const notes = document.getElementById('notes').value;
+
+            // Create formatted receipt data
+            const receiptData = `RECEIPT
+================
+Name: ${name}
+Account: ${account}
+ID: ${idNumber}
+Amount: MMK ${amount}
+In Words: ${amountWords}${notes ? '\nNotes: ' + notes : ''}
+================
+Generated: ${new Date().toLocaleString()}`;
+
+            // Clear previous QR code
+            document.getElementById('qrcode').innerHTML = '';
+
+            // Generate new QR code
+            qrCodeInstance = new QRCode(document.getElementById('qrcode'), {
+                text: receiptData,
+                width: 300,
+                height: 300,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Show download button
+            document.getElementById('downloadBtn').style.display = 'block';
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'receipt-qr-code.png';
+                link.href = url;
+                link.click();
+            }
+        }
+
+        // Generate QR on page load with default values
+        window.onload = function() {
+            generateQR();
+        };
+    </script>
+</body>
+</html>
